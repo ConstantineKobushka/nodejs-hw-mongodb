@@ -27,7 +27,8 @@ const contactSchema = new Schema(
     },
   },
   {
-    timestamps: true, // Автоматично створює поля createdAt та updatedAt
+    timestamps: true,
+    versionKey: false,
   },
 );
 
