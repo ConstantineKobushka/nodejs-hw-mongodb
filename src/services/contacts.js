@@ -1,6 +1,43 @@
 import ContactCollection from '../db/models/Contact.js';
 
-export const getContacts = () => ContactCollection.find();
+import { calcPaginationData } from '../utils/calcPaginationData.js';
+
+export const getContacts = async ({
+  page = 1,
+  perPage = 10,
+  sortBy = '_id',
+  sortOrder = 'asc',
+  filter = {},
+}) => {
+  const limit = perPage;
+  const skip = (page - 1) * limit;
+  const contactsQuery = ContactCollection.find(); // отримуємо об'єкт запиту
+
+  if (filter.type) {
+    contactsQuery.where('contactType').equals(filter.type);
+  }
+
+  if (filter.isFavourite) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+
+  const data = await contactsQuery
+    .skip(skip)
+    .limit(limit) // пропусти перші skip об'єкта і поверни наступні limit
+    .sort({ [sortBy]: sortOrder });
+
+  const totalItems = await ContactCollection.find()
+    .merge(contactsQuery)
+    .countDocuments(); // countDocuments повертає загальну кількість обєктів
+
+  const paginationData = calcPaginationData({ totalItems, page, perPage });
+
+  return {
+    data,
+    totalItems,
+    ...paginationData,
+  };
+};
 
 export const getContactById = (id) => ContactCollection.findById(id);
 

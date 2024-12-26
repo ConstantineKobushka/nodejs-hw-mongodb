@@ -1,7 +1,5 @@
 import createError from 'http-errors';
 
-// import { contactAddSchema } from '../validation/contacts.js';
-
 export const validateBody = (schema) => {
   const func = async (req, res, next) => {
     try {
