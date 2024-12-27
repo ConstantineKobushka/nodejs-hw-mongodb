@@ -4,7 +4,7 @@ export const parseSortParams = ({ sortBy, sortOrder }, sortByList) => {
   const parsedSortOrder = sortOrderlist.includes(sortOrder)
     ? sortOrder
     : sortOrderlist[0];
-  const parsedSortBy = sortOrderlist.includes(sortBy) ? sortBy : '_id';
+  const parsedSortBy = sortByList.includes(sortBy) ? sortBy : '_id';
 
   return {
     sortBy: parsedSortBy,
