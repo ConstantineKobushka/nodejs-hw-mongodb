@@ -21,20 +21,19 @@ export const getContacts = async ({
     contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
+  const total = await ContactCollection.find()
+    .merge(contactsQuery)
+    .countDocuments(); // countDocuments повертає загальну кількість обєктів
+
   const data = await contactsQuery
     .skip(skip)
     .limit(limit) // пропусти перші skip об'єкта і поверни наступні limit
     .sort({ [sortBy]: sortOrder });
 
-  const totalItems = await ContactCollection.find()
-    .merge(contactsQuery)
-    .countDocuments(); // countDocuments повертає загальну кількість обєктів
-
-  const paginationData = calcPaginationData({ totalItems, page, perPage });
+  const paginationData = calcPaginationData({ total, page, perPage });
 
   return {
     data,
-    totalItems,
     ...paginationData,
   };
 };
