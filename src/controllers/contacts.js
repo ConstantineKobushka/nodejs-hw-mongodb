@@ -8,6 +8,8 @@ import { parseContactFilterParams } from '../utils/filters/parseContactFilterPar
 import { saveFileToUploadsDir } from '../utils/saveFileToUploadsDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
+import { deleteFileFromCloudinary } from '../utils/deleteFileFromCloudinary.js';
+import { extractFileIdFromCloudinary } from '../utils/extractFileIdFromCloudinary.js';
 
 import { sortByList } from '../db/models/Contact.js';
 
@@ -84,18 +86,23 @@ export const addContactController = async (req, res) => {
 export const upsertContactController = async (req, res) => {
   const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
   let avatar;
-  console.log(req.file);
-
-  if (req.file) {
-    if (cloudinaryEnable) {
-      avatar = await saveFileToCloudinary(req.file);
-    } else {
-      avatar = await saveFileToUploadsDir(req.file);
-    }
-  }
 
   const { id } = req.params;
   const { _id: userId } = req.user;
+
+  const existingContact = await contactServices.getContactById(id);
+
+  if (req.file) {
+    if (cloudinaryEnable && existingContact?.avatar) {
+      const publicId = extractFileIdFromCloudinary(existingContact.avatar); // Предположим, эта функция извлекает publicId из URL
+      await deleteFileFromCloudinary(publicId);
+    }
+
+    avatar = cloudinaryEnable
+      ? await saveFileToCloudinary(req.file)
+      : await saveFileToUploadsDir(req.file);
+  }
+
   const { isNew, data } = await contactServices.updateContact(
     id,
     { ...req.body, userId, avatar },
@@ -117,16 +124,22 @@ export const patchContactController = async (req, res) => {
   const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
   let avatar;
 
-  if (req.file) {
-    if (cloudinaryEnable) {
-      avatar = await saveFileToCloudinary(req.file);
-    } else {
-      avatar = await saveFileToUploadsDir(req.file);
-    }
-  }
-
   const { id: _id } = req.params;
   const { _id: userId } = req.user;
+
+  const existingContact = await contactServices.getContactById(_id);
+
+  if (req.file) {
+    if (cloudinaryEnable && existingContact?.avatar) {
+      const publicId = extractFileIdFromCloudinary(existingContact.avatar); // Предположим, эта функция извлекает publicId из URL
+      await deleteFileFromCloudinary(publicId);
+    }
+
+    avatar = cloudinaryEnable
+      ? await saveFileToCloudinary(req.file)
+      : await saveFileToUploadsDir(req.file);
+  }
+
   // const contact = await contactServices.updateContact(
   //   { _id, userId, avatar },
   //   req.body,
