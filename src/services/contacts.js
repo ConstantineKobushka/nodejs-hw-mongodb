@@ -49,10 +49,10 @@ export const getContact = (filter) => ContactCollection.findOne(filter);
 export const addContact = (contactData) =>
   ContactCollection.create(contactData);
 
-export const updateContact = async (filter, contactData, options = {}) => {
+export const updateContact = async (_id, contactData, options = {}) => {
   const { upsert = false } = options;
   const contact = await ContactCollection.findOneAndUpdate(
-    filter,
+    { _id },
     contactData,
     {
       upsert,

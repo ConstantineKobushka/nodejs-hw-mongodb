@@ -5,6 +5,9 @@ import * as contactServices from '../services/contacts.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseContactFilterParams } from '../utils/filters/parseContactFilterParams.js';
+import { saveFileToUploadsDir } from '../utils/saveFileToUploadsDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 import { sortByList } from '../db/models/Contact.js';
 
@@ -53,8 +56,23 @@ export const getContactsByIdController = async (req, res) => {
 };
 
 export const addContactController = async (req, res) => {
+  const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
+  let avatar;
+
+  if (req.file) {
+    if (cloudinaryEnable) {
+      avatar = await saveFileToCloudinary(req.file);
+    } else {
+      avatar = await saveFileToUploadsDir(req.file);
+    }
+  }
+
   const { _id: userId } = req.user;
-  const contact = await contactServices.addContact({ ...req.body, userId });
+  const contact = await contactServices.addContact({
+    ...req.body,
+    avatar,
+    userId,
+  });
 
   res.status(201).json({
     status: 201,
@@ -64,11 +82,23 @@ export const addContactController = async (req, res) => {
 };
 
 export const upsertContactController = async (req, res) => {
+  const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
+  let avatar;
+  console.log(req.file);
+
+  if (req.file) {
+    if (cloudinaryEnable) {
+      avatar = await saveFileToCloudinary(req.file);
+    } else {
+      avatar = await saveFileToUploadsDir(req.file);
+    }
+  }
+
   const { id } = req.params;
   const { _id: userId } = req.user;
   const { isNew, data } = await contactServices.updateContact(
     id,
-    { ...req.body, userId },
+    { ...req.body, userId, avatar },
     {
       upsert: true,
     },
@@ -84,12 +114,28 @@ export const upsertContactController = async (req, res) => {
 };
 
 export const patchContactController = async (req, res) => {
+  const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
+  let avatar;
+
+  if (req.file) {
+    if (cloudinaryEnable) {
+      avatar = await saveFileToCloudinary(req.file);
+    } else {
+      avatar = await saveFileToUploadsDir(req.file);
+    }
+  }
+
   const { id: _id } = req.params;
   const { _id: userId } = req.user;
-  const contact = await contactServices.updateContact(
-    { _id, userId },
-    req.body,
-  );
+  // const contact = await contactServices.updateContact(
+  //   { _id, userId, avatar },
+  //   req.body,
+  // );
+  const contact = await contactServices.updateContact(_id, {
+    ...req.body,
+    userId,
+    avatar,
+  });
 
   if (!contact) {
     throw createError(404, `Contact with id=${_id} not found`);

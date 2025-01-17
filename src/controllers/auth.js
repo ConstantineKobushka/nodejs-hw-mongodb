@@ -42,7 +42,6 @@ export const loginController = async (req, res) => {
   });
 };
 
-// !
 export const requestResetEmailController = async (req, res) => {
   await authServices.requestResetToken(req.body.email);
 

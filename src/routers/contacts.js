@@ -11,6 +11,7 @@ import {
 
 import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/upload.js';
 
 // const app = express();
 const contactsRouter = Router();
@@ -32,12 +33,14 @@ contactsRouter.get(
 
 contactsRouter.post(
   '/contacts',
+  upload.single('avatar'),
   validateBody(contactAddSchema),
   ctrlWrapper(contactsController.addContactController),
 );
 
 contactsRouter.put(
   '/contacts/:id',
+  upload.single('avatar'),
   isValidId,
   validateBody(contactAddSchema),
   ctrlWrapper(contactsController.upsertContactController),
@@ -45,6 +48,7 @@ contactsRouter.put(
 
 contactsRouter.patch(
   '/contacts/:id',
+  upload.single('avatar'),
   isValidId,
   validateBody(contactUpdateSchema),
   ctrlWrapper(contactsController.patchContactController),
