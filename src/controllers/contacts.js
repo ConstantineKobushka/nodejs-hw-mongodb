@@ -45,9 +45,6 @@ export const getContactsByIdController = async (req, res) => {
 
   if (!contact) {
     throw createError(404, `Contact with id=${_id} not found`);
-    // const error = new Error(`Contact with id=${id} not found`);
-    // error.status = 404;
-    // throw error;
   }
 
   res.json({
@@ -94,7 +91,7 @@ export const upsertContactController = async (req, res) => {
 
   if (req.file) {
     if (cloudinaryEnable && existingContact?.avatar) {
-      const publicId = extractFileIdFromCloudinary(existingContact.avatar); // Предположим, эта функция извлекает publicId из URL
+      const publicId = extractFileIdFromCloudinary(existingContact.avatar);
       await deleteFileFromCloudinary(publicId);
     }
 
@@ -131,7 +128,7 @@ export const patchContactController = async (req, res) => {
 
   if (req.file) {
     if (cloudinaryEnable && existingContact?.avatar) {
-      const publicId = extractFileIdFromCloudinary(existingContact.avatar); // Предположим, эта функция извлекает publicId из URL
+      const publicId = extractFileIdFromCloudinary(existingContact.avatar);
       await deleteFileFromCloudinary(publicId);
     }
 
@@ -140,10 +137,6 @@ export const patchContactController = async (req, res) => {
       : await saveFileToUploadsDir(req.file);
   }
 
-  // const contact = await contactServices.updateContact(
-  //   { _id, userId, avatar },
-  //   req.body,
-  // );
   const contact = await contactServices.updateContact(_id, {
     ...req.body,
     userId,
@@ -162,14 +155,11 @@ export const patchContactController = async (req, res) => {
 };
 
 export const deleteContactController = async (req, res) => {
-  // const contact = await contactServices.deleteContact(req.params.id);
-
   const { id: _id } = req.params;
   const { _id: userId } = req.user;
   const contact = await contactServices.deleteContact({ _id, userId });
 
   if (!contact) {
-    // throw createError(404, `Contact not found`);
     throw createError(404, `Contact with id=${_id} not found`);
   }
 

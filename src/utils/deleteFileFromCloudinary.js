@@ -20,20 +20,3 @@ export const deleteFileFromCloudinary = async (publicId) => {
     console.error(`Failed to delete file with publicId ${publicId}`, error);
   }
 };
-
-// export const deleteFileFromCloudinary = async (publicId) => {
-//   try {
-//     const response = await cloudinary.uploader.destroy(publicId);
-//     console.log('Cloudinary response:', response);
-//     if (response.result === 'ok') {
-//       console.log(`File with publicId ${publicId} successfully deleted.`);
-//     } else {
-//       console.error(
-//         `Cloudinary failed to delete publicId ${publicId}:`,
-//         response.result,
-//       );
-//     }
-//   } catch (error) {
-//     console.error(`Failed to delete file with publicId ${publicId}`, error);
-//   }
-// };
