@@ -56,20 +56,20 @@ export const getContactsByIdController = async (req, res) => {
 
 export const addContactController = async (req, res) => {
   const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
-  let avatar;
+  let photo;
 
   if (req.file) {
     if (cloudinaryEnable) {
-      avatar = await saveFileToCloudinary(req.file);
+      photo = await saveFileToCloudinary(req.file);
     } else {
-      avatar = await saveFileToUploadsDir(req.file);
+      photo = await saveFileToUploadsDir(req.file);
     }
   }
 
   const { _id: userId } = req.user;
   const contact = await contactServices.addContact({
     ...req.body,
-    avatar,
+    photo,
     userId,
   });
 
@@ -82,7 +82,7 @@ export const addContactController = async (req, res) => {
 
 export const upsertContactController = async (req, res) => {
   const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
-  let avatar;
+  let photo;
 
   const { id } = req.params;
   const { _id: userId } = req.user;
@@ -90,19 +90,19 @@ export const upsertContactController = async (req, res) => {
   const existingContact = await contactServices.getContactById(id);
 
   if (req.file) {
-    if (cloudinaryEnable && existingContact?.avatar) {
-      const publicId = extractFileIdFromCloudinary(existingContact.avatar);
+    if (cloudinaryEnable && existingContact?.photo) {
+      const publicId = extractFileIdFromCloudinary(existingContact.photo);
       await deleteFileFromCloudinary(publicId);
     }
 
-    avatar = cloudinaryEnable
+    photo = cloudinaryEnable
       ? await saveFileToCloudinary(req.file)
       : await saveFileToUploadsDir(req.file);
   }
 
   const { isNew, data } = await contactServices.updateContact(
     id,
-    { ...req.body, userId, avatar },
+    { ...req.body, userId, photo },
     {
       upsert: true,
     },
@@ -119,7 +119,7 @@ export const upsertContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
-  let avatar;
+  let photo;
 
   const { id: _id } = req.params;
   const { _id: userId } = req.user;
@@ -127,12 +127,12 @@ export const patchContactController = async (req, res) => {
   const existingContact = await contactServices.getContactById(_id);
 
   if (req.file) {
-    if (cloudinaryEnable && existingContact?.avatar) {
-      const publicId = extractFileIdFromCloudinary(existingContact.avatar);
+    if (cloudinaryEnable && existingContact?.photo) {
+      const publicId = extractFileIdFromCloudinary(existingContact.photo);
       await deleteFileFromCloudinary(publicId);
     }
 
-    avatar = cloudinaryEnable
+    photo = cloudinaryEnable
       ? await saveFileToCloudinary(req.file)
       : await saveFileToUploadsDir(req.file);
   }
@@ -140,7 +140,7 @@ export const patchContactController = async (req, res) => {
   const contact = await contactServices.updateContact(_id, {
     ...req.body,
     userId,
-    avatar,
+    photo,
   });
 
   if (!contact) {

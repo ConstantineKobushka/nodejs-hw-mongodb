@@ -33,23 +33,23 @@ contactsRouter.get(
 
 contactsRouter.post(
   '/contacts',
-  upload.single('avatar'),
+  upload.single('photo'),
   validateBody(contactAddSchema),
   ctrlWrapper(contactsController.addContactController),
 );
 
 contactsRouter.put(
   '/contacts/:id',
-  upload.single('avatar'),
   isValidId,
+  upload.single('photo'),
   validateBody(contactAddSchema),
   ctrlWrapper(contactsController.upsertContactController),
 );
 
 contactsRouter.patch(
   '/contacts/:id',
-  upload.single('avatar'),
   isValidId,
+  upload.single('photo'),
   validateBody(contactUpdateSchema),
   ctrlWrapper(contactsController.patchContactController),
 );

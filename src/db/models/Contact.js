@@ -29,7 +29,7 @@ const contactSchema = new Schema(
       default: 'personal',
       required: true,
     },
-    avatar: {
+    photo: {
       type: String,
     },
     userId: {
