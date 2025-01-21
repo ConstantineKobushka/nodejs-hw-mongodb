@@ -25,6 +25,21 @@ paths:
       $ref: ../swagger/paths/contacts/{id}/patch.yaml
     delete:
       $ref: ../swagger/paths/contacts/{id}/delete.yaml
+  /auth/register:
+    post:
+      $ref: ../swagger/paths/user/register.yaml
+  /auth/login:
+    post:
+      $ref: ../swagger/paths/user/login.yaml
+  /auth/logout:
+    post:
+      $ref: ../swagger/paths/user/logout.yaml
+  /auth/send-reset-email:
+    post:
+      $ref: ../swagger/paths/user/sendResetEmail.yaml
+  /auth/reset-pwd:
+    post:
+      $ref: ../swagger/paths/user/resetPwd.yaml
 components:
   securitySchemes:
     bearerAuth:
