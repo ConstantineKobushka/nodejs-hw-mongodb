@@ -21,12 +21,12 @@ export const setupServer = () => {
   app.use(cookieParser());
   app.use(logger);
 
+  app.use('/api-docs', swaggerDocs());
+
   app.use('/auth', authRouter);
 
   app.use('/', contactsRouter);
   app.use('/contacts', contactsRouter);
-
-  app.use('/api-docs', swaggerDocs());
 
   app.use(notFoundHandler);
 
