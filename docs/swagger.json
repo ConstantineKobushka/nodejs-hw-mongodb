@@ -187,8 +187,6 @@
                 "required": [
                   "name",
                   "phoneNumber",
-                  "email",
-                  "isFavourite",
                   "contactType"
                 ],
                 "properties": {
@@ -354,13 +352,6 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "phoneNumber",
-                  "email",
-                  "isFavourite",
-                  "contactType"
-                ],
                 "properties": {
                   "name": {
                     "description": "Contact's name",
@@ -460,11 +451,8 @@
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "description": "The contact was successfully deleted"
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
           }
         }
       }
