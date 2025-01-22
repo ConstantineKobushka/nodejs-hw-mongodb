@@ -7,7 +7,7 @@ import authRouter from './routers/auth.js';
 
 import { getEnvVar } from './utils/getEnvVar.js';
 
-// import { logger } from './middlewares/logger.js';
+import { logger } from './middlewares/logger.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
@@ -19,7 +19,7 @@ export const setupServer = () => {
   app.use(express.json());
   app.use(express.static('uploads'));
   app.use(cookieParser());
-  // app.use(logger);
+  app.use(logger);
 
   app.use('/api-docs', swaggerDocs());
 
